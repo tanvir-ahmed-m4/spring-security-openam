@@ -1,0 +1,37 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+  <head>
+    <title tiles:fragment="title">Messages : Login</title>
+  </head>
+  <body>
+  	Logged user: <span sec:authentication="name">Bob</span>
+  	<br/>
+	Principal: <span sec:authentication="principal">Principal</span>
+	<br>/
+	Roles: <span xsec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+    <div tiles:fragment="content">
+        <h1>User Attributes</h1>
+        <table class="table table-border">
+            <thead>
+                <tr>
+                    <th>Attribute Name</th>
+                    <th>Attribute Value</th>
+                </tr>
+            </thead>
+            <tbody>
+               <tr>
+                    <td>ID</td>
+                    <td th:text="${authentication.identityUrl}">https://example.com/user/id</td>
+               </tr>
+                    <tr th:each="attribute : ${authentication.attributes}">
+                        <td th:text="${attribute.name}">Attribute Name</td>
+                        <td>
+                            <dl th:each="value : ${attribute.values}">
+                                <dd th:text="${value}">Attribute Value</dd>
+                            </dl>
+                        </td>
+                   </tr>
+           </tbody>
+        </table>
+    </div>
+  </body>
+</html>

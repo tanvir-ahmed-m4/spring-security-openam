@@ -1,0 +1,15 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+<head>
+<title tiles:fragment="title">Messages : Login</title>
+</head>
+<body>
+	<h1>Thymeleaf template - Login</h1>
+	Remote User: <span th:text="${#httpServletRequest.remoteUser}">remoteUser</span>
+	<br/>
+	Principal type: <span th:text="${#httpServletRequest.getUserPrincipal().getClass()}">GenericPrincipal.class</span>
+	<br/>
+  	Logged user: <span sec:authentication="name">Bob</span>
+  	<br/>
+	Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+</body>
+</html>
