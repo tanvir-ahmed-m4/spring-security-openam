@@ -92,8 +92,12 @@ public class MyController {
 	    Map attrs = userIdentity.getAttributes();
 	    sb.append("User Attributes: " + attrs);
 	    
-	    Set groupsSet = (Set) userIdentity.getMemberships(IdType.GROUP);
+	    Set<AMIdentity> groupsSet = (Set<AMIdentity>) userIdentity.getMemberships(IdType.GROUP);
 	    sb.append("User Groups: " + groupsSet);
+//	    for (AMIdentity group : groupsSet) {
+//	    	sb.append("Group Attributes: " + group.getAttributes());
+//		}
+	    
 
         return sb;
     }

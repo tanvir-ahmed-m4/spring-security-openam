@@ -6,6 +6,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,6 +29,7 @@ import com.iplanet.sso.SSOTokenID;
 import com.iplanet.sso.SSOTokenManager;
 import com.sun.identity.idm.AMIdentity;
 import com.sun.identity.idm.IdRepoException;
+import com.sun.identity.idm.IdType;
 import com.sun.identity.idm.IdUtils;
 import com.sun.identity.provider.springsecurity.OpenSSOAuthenticationProvider;
 
@@ -92,16 +94,16 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {	
 		logger.info("[2] do something useful....");
 
-		SSOToken token = null;
-		Principal principal = null; 
+		Object preAuthPrincipal = null;
+		
 		try {
 			SSOTokenManager manager = SSOTokenManager.getInstance();
-			token = manager.createSSOToken(request);
+			SSOToken token = manager.createSSOToken(request);
 
 			if (manager.isValidToken(token)) {
 			    //print some of the values from the token.
 			    String host = token.getHostName();
-			    principal = token.getPrincipal();
+			    Principal principal = token.getPrincipal();
 			    String authType = token.getAuthType();
 			    int level = token.getAuthLevel();
 			    InetAddress ipAddress = token.getIPAddress();
@@ -114,6 +116,7 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 			// Get the SSOTokenID associated with the token and print it.
 			SSOTokenID tokenId = token.getTokenID();
+			preAuthPrincipal = tokenId;
 
 			// Set and get some properties in the token.
 			token.setProperty("Company", "Sun Microsystems");
@@ -124,6 +127,8 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 			// Retrieve user profile and print them
 			AMIdentity userIdentity = IdUtils.getIdentity(token);
 			Map attrs = userIdentity.getAttributes();
+			Set groupsSet = (Set) userIdentity.getMemberships(IdType.GROUP);
+		    
 		} catch (SSOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,11 +140,11 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 			e.printStackTrace();
 		}
 	    
-        Object aPrincipal = principal == null ? null : principal.getName();
+//        Object aPrincipal = principal == null ? null : principal.getName();
         if (logger.isDebugEnabled()) {
-            logger.debug("[3] MyPreAuthFilter OpenAM principal: " + aPrincipal);
+            logger.debug("[3] MyPreAuthFilter OpenAM preAuthPrincipal: " + preAuthPrincipal);
         }
-        return aPrincipal;
+        return preAuthPrincipal;
 	}
 
     /**
