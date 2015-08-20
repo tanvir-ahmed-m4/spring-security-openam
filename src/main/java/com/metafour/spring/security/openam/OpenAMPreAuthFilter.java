@@ -33,15 +33,14 @@ import com.sun.identity.idm.IdType;
 import com.sun.identity.idm.IdUtils;
 import com.sun.identity.provider.springsecurity.OpenSSOAuthenticationProvider;
 
-//public class MyPreAuthFilter extends J2eePreAuthenticatedProcessingFilter {
-public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
+public class OpenAMPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-	private static final Logger logger = Logger.getLogger(ApplicationSecurity.class);
+	private static final Logger logger = Logger.getLogger(OpenAMPreAuthSecurityConfig.class);
 	
-	public MyPreAuthFilter() {
+	public OpenAMPreAuthFilter() {
 		List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>();
 		PreAuthenticatedAuthenticationProvider paaProvider = new PreAuthenticatedAuthenticationProvider();
-		UserService userService = new UserService();
+		OpenAMPreAuthUserDetailsService userService = new OpenAMPreAuthUserDetailsService();
         paaProvider.setPreAuthenticatedUserDetailsService(userService);
         providers.add(paaProvider);
         ProviderManager authenticationManager = new ProviderManager(providers); 
@@ -53,7 +52,7 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
             throws IOException, ServletException {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("[0] Checking secure context token: " + SecurityContextHolder.getContext().getAuthentication());
+            logger.debug("[1] Checking secure context token: " + SecurityContextHolder.getContext().getAuthentication());
         }
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -65,16 +64,11 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 			token = manager.createSSOToken(httpRequest);
 
 			if (manager.isValidToken(token)) {
-			    //print some of the values from the token.
-			    String host = token.getHostName();
 			    principal = token.getPrincipal();
-			    String authType = token.getAuthType();
-			    int level = token.getAuthLevel();
-			    InetAddress ipAddress = token.getIPAddress();
 			}
 			Object aPrincipal = principal == null ? null : principal.getName();
 			if (logger.isDebugEnabled()) {
-			    logger.debug("[1] MyPreAuthFilter OpenAM principal: " + aPrincipal);
+			    logger.debug("[2] MyPreAuthFilter OpenAM principal: " + aPrincipal);
 			}
 		} catch (SSOException e) {
 			// TODO Auto-generated catch block
@@ -92,22 +86,13 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
      */
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {	
-		logger.info("[2] do something useful....");
+		logger.info("[3] getPreAuthenticatedPrincipal ...");
 
 		Object preAuthPrincipal = null;
 		
 		try {
 			SSOTokenManager manager = SSOTokenManager.getInstance();
 			SSOToken token = manager.createSSOToken(request);
-
-			if (manager.isValidToken(token)) {
-			    //print some of the values from the token.
-			    String host = token.getHostName();
-			    Principal principal = token.getPrincipal();
-			    String authType = token.getAuthType();
-			    int level = token.getAuthLevel();
-			    InetAddress ipAddress = token.getIPAddress();
-			}
 
 			/* Validate the token again, with another method.
 			* if token is invalid, this method throws exception
@@ -121,13 +106,9 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 			// Set and get some properties in the token.
 			token.setProperty("Company", "Sun Microsystems");
 			token.setProperty("Country", "USA");
-			String name = token.getProperty("Company");
-			String country = token.getProperty("Country");
 
 			// Retrieve user profile and print them
 			AMIdentity userIdentity = IdUtils.getIdentity(token);
-			Map attrs = userIdentity.getAttributes();
-			Set groupsSet = (Set) userIdentity.getMemberships(IdType.GROUP);
 		    
 		} catch (SSOException e) {
 			// TODO Auto-generated catch block
@@ -140,9 +121,8 @@ public class MyPreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 			e.printStackTrace();
 		}
 	    
-//        Object aPrincipal = principal == null ? null : principal.getName();
         if (logger.isDebugEnabled()) {
-            logger.debug("[3] MyPreAuthFilter OpenAM preAuthPrincipal: " + preAuthPrincipal);
+            logger.debug("[4] OpenAM preAuthPrincipal: " + preAuthPrincipal);
         }
         return preAuthPrincipal;
 	}

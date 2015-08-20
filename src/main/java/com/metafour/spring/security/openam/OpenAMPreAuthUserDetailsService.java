@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.iplanet.sso.SSOException;
 import com.iplanet.sso.SSOToken;
@@ -25,15 +25,15 @@ import com.sun.identity.idm.IdRepoException;
 import com.sun.identity.idm.IdType;
 import com.sun.identity.idm.IdUtils;
 
-@Component
-public class UserService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
+@Service
+public class OpenAMPreAuthUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
-	private static final Logger logger = Logger.getLogger(UserService.class);
+	private static final Logger logger = Logger.getLogger(OpenAMPreAuthUserDetailsService.class);
 	
 	@Override
 	public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken preAuthToken)
 			throws UsernameNotFoundException {
-		logger.info("[4] PreAuthenticatedAuthenticationToken: " + preAuthToken.getDetails());
+		logger.info("[5] loadUserDetails PreAuthenticatedAuthenticationToken: " + preAuthToken.getDetails());
 		
 		String userName = "unidentified";
 		String credential = "N/A";
@@ -75,7 +75,7 @@ public class UserService implements AuthenticationUserDetailsService<PreAuthenti
 			for (AMIdentity group : groupsSet) {
 				roles.add("ROLE_" + group.getName().toUpperCase());
 			}
-			logger.info("[5] roles: " + roles); 
+			logger.info("[6] loadUserDetails roles: " + roles); 
 		    
 		} catch (SSOException e) {
 			// TODO Auto-generated catch block

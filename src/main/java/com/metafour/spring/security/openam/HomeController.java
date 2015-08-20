@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 @Controller
-public class MyController {
+public class HomeController {
 	
     @RequestMapping("/")
     public String home(Model model) {
@@ -42,8 +42,11 @@ public class MyController {
     }
     
     @RequestMapping("/info")
-    public @ResponseBody StringBuffer info(Model model, HttpServletRequest request) throws SSOException, IdRepoException {
+    public @ResponseBody String info(Model model, HttpServletRequest request) throws SSOException, IdRepoException {
     	StringBuffer sb = new StringBuffer();
+    	sb.append("<html>");
+    	sb.append("<head><title>SSO Info</title></head>");
+    	sb.append("<body>");
 	    SSOTokenManager manager = SSOTokenManager.getInstance();
 	    SSOToken token = manager.createSSOToken(request);
 
@@ -56,13 +59,15 @@ public class MyController {
 	        InetAddress ipAddress = token.getIPAddress();
 
 	        sb.append("SSOToken host name: " + host);
-	        sb.append("\n");
+	        sb.append("<br/>");
 	        sb.append("SSOToken Principal name: " + principal.getName());
-	        sb.append("\n");
+	        sb.append("<br/>");
 	        sb.append("Authentication type used: " + authType);
-	        sb.append("\n");
+	        sb.append("<br/>");
+	        sb.append("Authentication level: " + level);
+	        sb.append("<br/>");
 	        sb.append("IPAddress of the host: " + ipAddress.getHostAddress());
-	        sb.append("\n");
+	        sb.append("<br/>");
 	    }
 
 	    /* Validate the token again, with another method.
@@ -70,12 +75,12 @@ public class MyController {
 	    */
 	    manager.validateToken(token);
 	    sb.append("SSO Token validation test succeeded");
-	    sb.append("\n");
+	    sb.append("<br/>");
 
 	    // Get the SSOTokenID associated with the token and print it.
 	    SSOTokenID tokenId = token.getTokenID();
 	    sb.append("The token id is " + tokenId.toString());
-	    sb.append("\n");
+	    sb.append("<br/>");
 
 	    // Set and get some properties in the token.
 	    token.setProperty("Company", "Sun Microsystems");
@@ -83,22 +88,26 @@ public class MyController {
 	    String name = token.getProperty("Company");
 	    String country = token.getProperty("Country");
 	    sb.append("Property: Company: " + name);
-	    sb.append("\n");
+	    sb.append("<br/>");
 	    sb.append("Property: Country: " + country);
-	    sb.append("\n");
+	    sb.append("<br/>");
 
 	    // Retrieve user profile and print them
 	    AMIdentity userIdentity = IdUtils.getIdentity(token);
 	    Map attrs = userIdentity.getAttributes();
 	    sb.append("User Attributes: " + attrs);
+	    sb.append("<br/>");
 	    
 	    Set<AMIdentity> groupsSet = (Set<AMIdentity>) userIdentity.getMemberships(IdType.GROUP);
 	    sb.append("User Groups: " + groupsSet);
+	    sb.append("<br/>");
 //	    for (AMIdentity group : groupsSet) {
 //	    	sb.append("Group Attributes: " + group.getAttributes());
 //		}
 	    
+    	sb.append("</body>");
+	    sb.append("</html>");
 
-        return sb;
+        return sb.toString();
     }
 }
