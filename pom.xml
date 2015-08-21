@@ -23,6 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<openam.version>10.0.0-EA</openam.version>
+		<openam.j2ee.agents.path>/opt/openam_j2ee_agents/tomcat_v6_agent</openam.j2ee.agents.path>
 	</properties>
 
 	<dependencies>
@@ -40,18 +41,13 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter</artifactId>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>org.springframework.boot</groupId>
-		            <artifactId>spring-boot-starter-logging</artifactId>
-		        </exclusion>
-		    </exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-log4j</artifactId>
+		    <groupId>org.forgerock.openam.agents</groupId>
+		    <artifactId>jee-agents-sdk</artifactId>
+		    <version>3.5.0</version>
+		    <scope>system</scope>
+		    <type>jar</type>
+<!-- 		    <systemPath>${basedir}/lib/agent.jar</systemPath> -->
+			<systemPath>${openam.j2ee.agents.path}/lib/agent.jar</systemPath>
 		</dependency>
 		
 		<dependency>
